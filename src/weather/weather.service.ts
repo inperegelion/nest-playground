@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import { QueryDto } from './dto/query.dto';
-import { OpenWeatherService } from './openweather.service';
-import { OpenWeatherData } from './interfaces/openweather.interface';
+import { OpenWeatherData } from 'src/services/openweather/interfaces';
+import { OpenWeatherService } from 'src/services/openweather/service';
 
 type WeatherRecord = QueryDto & { data: OpenWeatherData };
 

@@ -1,4 +1,4 @@
-export class Weather {
+export class FormattedWeather {
   sunrise: number;
   sunset: number;
   temp: number;

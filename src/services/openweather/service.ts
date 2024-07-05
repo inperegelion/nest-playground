@@ -1,7 +1,4 @@
-import {
-  OpenWeatherData,
-  WeatherParts,
-} from './interfaces/openweather.interface';
+import { WeatherParts, OpenWeatherData } from './interfaces';
 
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY || '';
 

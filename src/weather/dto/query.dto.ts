@@ -1,4 +1,4 @@
-import { WeatherParts } from '../interfaces/openweather.interface';
+import { WeatherParts } from 'src/services/openweather/interfaces';
 
 export class QueryDto {
   lat: number;
