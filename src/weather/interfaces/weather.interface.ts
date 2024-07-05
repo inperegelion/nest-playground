@@ -1,3 +1,7 @@
+import { QueryDto } from '../dto/query.dto';
+
+import { OpenWeatherData } from './openweather.interface';
+
 export class FormattedWeather {
   sunrise: number;
   sunset: number;
@@ -8,3 +12,5 @@ export class FormattedWeather {
   uvi: number;
   wind_speed: number;
 }
+
+export type WeatherRecord = QueryDto & { data: OpenWeatherData };

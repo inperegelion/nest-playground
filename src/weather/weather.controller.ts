@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query, Res } from '@nestjs/common';
+import { Response } from 'express';
 
 import { WeatherService } from './weather.service';
 
@@ -10,16 +11,40 @@ export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
   @Post()
-  save(@Query() query: SaveWeatherDto) {
-    console.log('🏍️', query);
+  async save(@Query() query: SaveWeatherDto, @Res() res: Response) {
+    if (!query.lat || !query.lon) {
+      return res
+        .status(400)
+        .send('Missing required query parameters: lat, lon');
+    }
 
-    return this.weatherService.save(query);
+    const result = await this.weatherService.save(query);
+
+    if (!result) {
+      res
+        .status(504)
+        .send('Failed to get weather data. Maybe it will work next time.');
+    } else {
+      res.status(201).json(result);
+    }
   }
 
   @Get()
-  find(@Query() query: FindWeatherDto) {
-    console.log('🏍️', query);
+  async find(@Query() query: FindWeatherDto, @Res() res: Response) {
+    if (!query.lat || !query.lon) {
+      return res
+        .status(400)
+        .send('Missing required query parameters: lat, lon');
+    }
 
-    return this.weatherService.find(query);
+    const result = await this.weatherService.find(query);
+
+    if (!result) {
+      res
+        .status(404)
+        .send('Weather data not saved. Please save it first. (use POST)');
+    } else {
+      res.json(result);
+    }
   }
 }
