@@ -1,58 +1,60 @@
 import { Injectable } from '@nestjs/common';
 
 import { QueryDto } from './dto/query.dto';
-import { Weather } from './interfaces/weather.interface';
+import { OpenWeatherService } from './openweather.service';
+import { OpenWeatherData } from './interfaces/openweather.interface';
 
-type DbRecord = QueryDto & { data: Weather };
+type WeatherRecord = QueryDto & { data: OpenWeatherData };
 
 @Injectable()
 export class WeatherService {
-  private readonly db: DbRecord[] = [];
-  private readonly MOCK: Weather = {
-    sunrise: 1684926645,
-    sunset: 1684977332,
-    temp: 292.55,
-    feels_like: 292.87,
-    pressure: 1014,
-    humidity: 89,
-    uvi: 0.16,
-    wind_speed: 3.13,
-  };
+  private readonly db: WeatherRecord[] = [];
 
-  private findRecord(query: QueryDto): DbRecord | null {
-    if (!query) return null;
-
-    const record = this.db.find(
+  private async findRecord(
+    query: QueryDto,
+  ): Promise<{ record: WeatherRecord | null; index: number }> {
+    const index = this.db.findIndex(
       (record) =>
         record.lat === query.lat &&
         record.lon === query.lon &&
         record.part === query.part,
     );
-
-    return record ? record : null;
+    if (index === -1) return { record: null, index };
+    return { record: this.db[index], index };
   }
 
-  save(query: QueryDto, data: Weather = this.MOCK): Weather | null {
+  private async saveRecord(
+    query: QueryDto,
+    data: OpenWeatherData,
+  ): Promise<WeatherRecord> {
+    const { record: existingRecord, index } = await this.findRecord(query);
+    if (existingRecord) {
+      this.db[index].data = data;
+      return this.db[index];
+    } else {
+      const record = { ...query, data };
+      this.db.push(record);
+      return record;
+    }
+  }
+
+  private async getWeatherData(
+    query: QueryDto,
+  ): Promise<OpenWeatherData | null> {
+    return await OpenWeatherService.onecall(query.lat, query.lon, query.part);
+  }
+
+  public async save(query: QueryDto): Promise<WeatherRecord | null> {
     if (!query) return null;
+
+    const data = await this.getWeatherData(query);
     if (!data) return null;
 
-    const existingRecord = this.findRecord(query);
-
-    if (existingRecord) {
-      return existingRecord.data;
-    }
-
-    if (!existingRecord) {
-      this.db.push({ ...query, data });
-      return data;
-    }
-
-    return null;
+    return await this.saveRecord(query, data);
   }
 
-  find(query: QueryDto): Weather | null {
-    const record = this.findRecord(query);
-
-    return record ? record.data : null;
+  public async find(query: QueryDto): Promise<WeatherRecord | null> {
+    const { record } = await this.findRecord(query);
+    return record;
   }
 }
