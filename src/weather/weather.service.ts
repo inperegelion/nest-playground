@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 
 import { QueryDto } from './dto/query.dto';
-import { OpenWeatherData } from 'src/services/openweather/interfaces';
-import { OpenWeatherService } from 'src/services/openweather/service';
+import { OpenWeatherData } from './interfaces/openweather.interface';
+import { OpenWeatherService } from './openweather.service';
 
 type WeatherRecord = QueryDto & { data: OpenWeatherData };
 
 @Injectable()
 export class WeatherService {
+  constructor(private openWeatherService: OpenWeatherService) {}
   private readonly db: WeatherRecord[] = [];
 
   private async findRecord(

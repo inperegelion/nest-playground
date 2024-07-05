@@ -1,7 +1,12 @@
-import { WeatherParts, OpenWeatherData } from './interfaces';
+import { Injectable } from '@nestjs/common';
+import {
+  WeatherParts,
+  OpenWeatherData,
+} from './interfaces/openweather.interface';
 
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY || '';
 
+@Injectable()
 export class OpenWeatherService {
   private static readonly origin = 'https://api.openweathermap.org/data/3.0';
 
