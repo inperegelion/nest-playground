@@ -21,4 +21,11 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect('Hello World! The NestJS app is speaking!');
   });
+
+  it('/weather (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/weather')
+      .expect(200)
+      .expect('This action returns all weather');
+  });
 });
