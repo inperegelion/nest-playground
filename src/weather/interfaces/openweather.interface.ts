@@ -66,7 +66,7 @@ export interface DailyWeather {
   moon_phase: number;
   summary: string;
   temp: Temperature;
-  feels_like: Temperature;
+  feels_like: Partial<Temperature>;
   pressure: number;
   humidity: number;
   dew_point: number;
